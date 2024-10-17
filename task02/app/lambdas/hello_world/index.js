@@ -1,4 +1,5 @@
 exports.handler = async (event) => {
+    console.log(JSON.stringify(event));
     const path = event.rawPath;
     const method = event.requestContext.http.method;
 
