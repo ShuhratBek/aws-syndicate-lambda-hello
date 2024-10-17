@@ -1,0 +1,1 @@
+# aws-syndicate-lambda-hello
