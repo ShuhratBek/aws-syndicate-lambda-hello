@@ -33,12 +33,14 @@
     "delay_seconds": 0,
     "maximum_message_size": 1024,
     "message_retention_period": 60,
-    "receive_message_wait_time_seconds": 0,
+    "receive_message_wait_time_seconds": 20,
     "policy": {},
     "redrive_policy": {
       "deadLetterTargetArn": "arn:aws:sqs:eu-central-1:859465876068:dead-letter-queue",
       "maxReceiveCount": 2
     },
+    "kms_master_key_id": "b328b33f-51fd-44ab-bdd9-e182a015bffd",
+    "kms_data_key_reuse_period_seconds": 60,
     "content_based_deduplication": false,
     "tags": {}
   },

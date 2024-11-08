@@ -21,5 +21,7 @@
   "alias": "${lambdas_alias_name}",
   "url_config": {},
   "ephemeral_storage": 512,
-  "tags": {}
+  "tags": {},
+  "dl_resource_type": "sqs",
+  "dl_resource_name": "dead-letter-queue"
 }
