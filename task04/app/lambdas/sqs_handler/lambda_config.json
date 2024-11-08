@@ -6,7 +6,7 @@
   "iam_role_name": "sqs_handler-role",
   "runtime": "nodejs20.x",
   "memory": 128,
-  "timeout": 100,
+  "timeout": 10,
   "lambda_path": "lambdas/sqs_handler",
   "dependencies": [],
   "event_sources": [{
