@@ -1,0 +1,21 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "allowGetPutList",
+      "Principal": {
+        "AWS": "arn:aws:iam::905418349556:role/cmtr-1e02061e-iam-pela-iam_role"
+      },
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::cmtr-1e02061e-iam-pela-bucket-1-3162418",
+        "arn:aws:s3:::cmtr-1e02061e-iam-pela-bucket-1-3162418/*"
+      ]
+    }
+  ]
+}
