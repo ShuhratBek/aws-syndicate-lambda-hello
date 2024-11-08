@@ -12,8 +12,8 @@
   "event_sources": [{
     "resource_type": "sqs_trigger",
     "target_queue": "async_queue",
-    "batch_size": 123,
-    "batch_window": 123,
+    "batch_size": 10,
+    "batch_window": 1,
     "function_response_types": ["ReportBatchItemFailures"]
   }],
   "env_variables": {},
@@ -21,7 +21,5 @@
   "alias": "${lambdas_alias_name}",
   "url_config": {},
   "ephemeral_storage": 512,
-  "tags": {},
-  "dl_resource_type": "sqs",
-  "dl_resource_name": "dead-letter-queue"
+  "tags": {}
 }
