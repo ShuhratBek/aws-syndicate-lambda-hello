@@ -5,6 +5,7 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {
     const tableName = 'Events'; // Ensure this matches your DynamoDB table name
+    console.log('event', JSON.stringify(event));
 
     try {
         // Parse the request body to get the incoming data

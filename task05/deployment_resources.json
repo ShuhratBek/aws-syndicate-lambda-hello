@@ -28,10 +28,13 @@
   "task5_api": {
     "resource_type": "api_gateway",
     "deploy_stage": "api",
-    "dependencies": [],
+    "dependencies": [{
+      "resource_name": "api_handler",
+      "resource_type": "lambda"
+    }],
     "resources": {
       "/events": {
-        "enable_cors": false,
+        "enable_cors": true,
         "POST": {
           "authorization_type": "NONE",
           "integration_type": "lambda",
