@@ -8,13 +8,14 @@
   "memory": 128,
   "timeout": 10,
   "lambda_path": "lambdas/sqs_handler",
-  "dependencies": [],
+  "dependencies": [{
+    "resource_type": "sqs_queue",
+    "resource_name": "async_queue"
+  }],
   "event_sources": [{
     "resource_type": "sqs_trigger",
     "target_queue": "async_queue",
-    "batch_size": 10,
-    "batch_window": 1,
-    "function_response_types": ["ReportBatchItemFailures"]
+    "batch_size": 10
   }],
   "env_variables": {},
   "publish_version": true,
