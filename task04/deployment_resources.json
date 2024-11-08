@@ -36,7 +36,7 @@
     "receive_message_wait_time_seconds": 20,
     "policy": {},
     "redrive_policy": {
-      "deadLetterTargetArn": "arn:aws:sqs:eu-central-1:859465876068:dead-letter-queue",
+      "deadLetterTargetArn": "arn:aws:sqs:eu-central-1:905418349556:dead-letter-queue",
       "maxReceiveCount": 2
     },
     "kms_master_key_id": "b328b33f-51fd-44ab-bdd9-e182a015bffd",
