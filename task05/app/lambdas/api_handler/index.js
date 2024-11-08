@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-const crypto = require('crypto');
+const uuid = require('uuid');
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
@@ -10,13 +10,13 @@ exports.handler = async (event) => {
         // Parse the request body to get the incoming data
         const { principalId, content } = JSON.parse(event.body);
 
-        // Generate a unique ID for the new event entry using crypto
-        const eventId = crypto.randomUUID();
+        // Generate a unique ID for the new event entry
+        const eventId = uuid.v4();
 
         // Construct the event data to save in DynamoDB
         const eventData = {
             id: eventId,
-            principalId: principalId,
+            principalId,
             createdAt: new Date().toISOString(),
             body: content,
         };
