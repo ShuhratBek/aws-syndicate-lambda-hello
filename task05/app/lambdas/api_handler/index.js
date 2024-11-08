@@ -8,8 +8,7 @@ exports.handler = async (event) => {
     console.log('event', JSON.stringify(event));
 
     try {
-        // Parse the request body to get the incoming data
-        const { principalId, content } = JSON.parse(event.body);
+        const { principalId, content } = event;
 
         // Generate a unique ID for the new event entry
         const eventId = uuid.v4();
