@@ -1,10 +1,11 @@
 const AWS = require('aws-sdk');
 const uuid = require('uuid');
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const region = process.env.region || "eu-central-1";// Defaulting to "eu-central-1" if region is not available in environment variables.
+const dynamoDb = new AWS.DynamoDB.DocumentClient({region});
 
 exports.handler = async (event) => {
-    const tableName = 'Events'; // Ensure this matches your DynamoDB table name
+    const tableName = process.env.target_table
     console.log('event', JSON.stringify(event));
 
     try {
