@@ -264,18 +264,24 @@ async function getTable(event) {
     }
 }
 // Check if a table exists in the 'Tables' table
-async function checkTableExists(tableNumber) {
+async function checkTableByNumber(tableNumber) {
     const params = {
         TableName: tablesTable,
-        Key: { id: tableNumber }
+        FilterExpression: '#num = :tableNumber',
+        ExpressionAttributeNames: {
+            '#num': 'number',
+        },
+        ExpressionAttributeValues: {
+            ':tableNumber': tableNumber,
+        },
     };
 
     try {
-        const data = await dynamoDb.get(params).promise();
-        return !!data.Item;
+        const data = await dynamoDb.scan(params).promise();
+        return data.Items && data.Items.length > 0;
     } catch (error) {
-        console.error('Error checking table existence:', error);
-        throw new Error('Error checking table existence');
+        console.error('Error checking table existence by number:', error);
+        throw new Error('Error checking table existence.');
     }
 }
 
@@ -307,7 +313,7 @@ async function createReservation(event) {
     }
 
     // Check if the table exists
-    const tableExists = await checkTableExists(tableNumber);
+    const tableExists = await checkTableByNumber(tableNumber);
     if (!tableExists) {
         return {
             statusCode: 400,
