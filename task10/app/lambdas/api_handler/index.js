@@ -272,7 +272,7 @@ async function createReservation(event) {
     const params = {
         TableName: reservationsTable,
         Item: {
-            reservationId: reservationId,
+            id: reservationId,
             tableNumber: body.tableNumber,
             clientName: body.clientName,
             phoneNumber: body.phoneNumber,
