@@ -1,0 +1,25 @@
+{
+  "version": "1.0",
+  "name": "api_handler",
+  "func_name": "lambdas/api_handler/index.handler",
+  "resource_type": "lambda",
+  "iam_role_name": "api_handler-role",
+  "runtime": "nodejs20.x",
+  "memory": 128,
+  "timeout": 100,
+  "lambda_path": "lambdas/api_handler",
+  "dependencies": [],
+  "event_sources": [],
+  "env_variables": {
+    "region": "${region}",
+    "tables_table": "${tables_table}",
+    "reservations_table": "${reservations_table}",
+    "booking_userpool": "${booking_userpool}",
+    "client_name": "client-app"
+  },
+  "publish_version": true,
+  "alias": "${lambdas_alias_name}",
+  "url_config": {},
+  "ephemeral_storage": 512,
+  "tags": {}
+}
