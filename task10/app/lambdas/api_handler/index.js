@@ -288,7 +288,7 @@ async function checkTableByNumber(tableNumber) {
 // Function to check for overlapping reservations
 async function checkForOverlappingReservations(tableNumber, date, slotTimeStart, slotTimeEnd) {
     const params = {
-        TableName: 'Reservations',
+        TableName: reservationsTable,
         FilterExpression: '#tableNum = :tableNumber AND #d = :date',
         ExpressionAttributeNames: {
             '#tableNum': 'tableNumber',
