@@ -2,7 +2,8 @@
   "openapi": "3.0.1",
   "info": {
     "title": "task11_api",
-    "version": "2024-11-09T17:04:50Z"
+    "version": "2024-11-09T17:04:50Z",
+    "description": "API for managing reservations and table bookings."
   },
   "servers": [
     {
@@ -17,9 +18,11 @@
   "paths": {
     "/reservations": {
       "get": {
+        "summary": "Retrieve all reservations",
+        "description": "Fetches all reservation records from the database.",
         "responses": {
           "200": {
-            "description": "200 response",
+            "description": "Successful retrieval of reservation records.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "schema": {
@@ -30,10 +33,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "$ref": "#/components/schemas/ReservationsResponse"
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request - Invalid parameters supplied."
           }
         },
         "security": [
@@ -57,9 +63,21 @@
         }
       },
       "post": {
+        "summary": "Create a new reservation",
+        "description": "Creates a reservation entry in the database.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReservationRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "200 response",
+            "description": "Reservation created successfully.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "schema": {
@@ -70,10 +88,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "$ref": "#/components/schemas/ReservationResponse"
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request - Duplicate reservation or invalid parameters."
           }
         },
         "security": [
@@ -99,7 +120,7 @@
       "options": {
         "responses": {
           "200": {
-            "description": "200 response",
+            "description": "CORS preflight check successful.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "schema": {
@@ -147,9 +168,11 @@
     },
     "/tables": {
       "get": {
+        "summary": "Retrieve all tables",
+        "description": "Fetches all table records including their availability and seating capacity.",
         "responses": {
           "200": {
-            "description": "200 response",
+            "description": "Tables retrieved successfully.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "schema": {
@@ -160,10 +183,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "$ref": "#/components/schemas/TablesResponse"
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request - Invalid query parameters."
           }
         },
         "security": [
@@ -187,9 +213,21 @@
         }
       },
       "post": {
+        "summary": "Create a new table",
+        "description": "Adds a new table to the reservation system.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "200 response",
+            "description": "Table created successfully.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "schema": {
@@ -200,10 +238,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "$ref": "#/components/schemas/TableResponse"
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request - Table already exists or invalid input provided."
           }
         },
         "security": [
@@ -229,7 +270,7 @@
       "options": {
         "responses": {
           "200": {
-            "description": "200 response",
+            "description": "CORS preflight check successful.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "schema": {
@@ -277,9 +318,21 @@
     },
     "/signin": {
       "post": {
+        "summary": "User sign-in",
+        "description": "Authenticates a user and returns an access token if successful.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "200 response",
+            "description": "Sign-in successful.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "schema": {
@@ -290,10 +343,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "$ref": "#/components/schemas/SignInResponse"
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request - Invalid credentials or required fields missing."
           }
         },
         "x-amazon-apigateway-integration": {
@@ -314,7 +370,7 @@
       "options": {
         "responses": {
           "200": {
-            "description": "200 response",
+            "description": "CORS preflight check successful.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "schema": {
@@ -362,6 +418,8 @@
     },
     "/tables/{tableId}": {
       "get": {
+        "summary": "Get table details",
+        "description": "Returns details of a specific table by table ID.",
         "parameters": [
           {
             "name": "tableId",
@@ -374,7 +432,7 @@
         ],
         "responses": {
           "200": {
-            "description": "200 response",
+            "description": "Table details retrieved successfully.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "schema": {
@@ -385,10 +443,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "$ref": "#/components/schemas/TableResponse"
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request - Table ID not found or is invalid."
           }
         },
         "security": [
@@ -424,7 +485,7 @@
         ],
         "responses": {
           "200": {
-            "description": "200 response",
+            "description": "CORS preflight check successful.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "schema": {
@@ -472,9 +533,21 @@
     },
     "/signup": {
       "post": {
+        "summary": "User sign-up",
+        "description": "Registers a new user account in the system.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "200 response",
+            "description": "Sign-up successful.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "schema": {
@@ -489,6 +562,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request - User already exists or input data invalid."
           }
         },
         "x-amazon-apigateway-integration": {
@@ -509,7 +585,7 @@
       "options": {
         "responses": {
           "200": {
-            "description": "200 response",
+            "description": "CORS preflight check successful.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "schema": {
@@ -561,6 +637,184 @@
       "Empty": {
         "title": "Empty Schema",
         "type": "object"
+      },
+      "ReservationsResponse": {
+        "type": "object",
+        "properties": {
+          "reservations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reservation"
+            }
+          }
+        }
+      },
+      "Reservation": {
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string"
+          },
+          "tableNumber": {
+            "type": "integer"
+          },
+          "clientName": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "slotTimeStart": {
+            "type": "string",
+            "format": "time"
+          },
+          "slotTimeEnd": {
+            "type": "string",
+            "format": "time"
+          }
+        }
+      },
+      "ReservationRequest": {
+        "type": "object",
+        "properties": {
+          "tableNumber": {
+            "type": "integer"
+          },
+          "clientName": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "slotTimeStart": {
+            "type": "string",
+            "format": "time"
+          },
+          "slotTimeEnd": {
+            "type": "string",
+            "format": "time"
+          }
+        },
+        "required": ["tableNumber", "clientName", "phoneNumber", "date", "slotTimeStart", "slotTimeEnd"]
+      },
+      "ReservationResponse": {
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string"
+          }
+        }
+      },
+      "TablesResponse": {
+        "type": "object",
+        "properties": {
+          "tables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Table"
+            }
+          }
+        }
+      },
+      "Table": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "number": {
+            "type": "integer"
+          },
+          "places": {
+            "type": "integer"
+          },
+          "isVip": {
+            "type": "boolean"
+          },
+          "minOrder": {
+            "type": "integer",
+            "nullable": true
+          }
+        }
+      },
+      "TableRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "number": {
+            "type": "integer"
+          },
+          "places": {
+            "type": "integer"
+          },
+          "isVip": {
+            "type": "boolean"
+          },
+          "minOrder": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "required": ["id", "number", "places", "isVip"]
+      },
+      "TableResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          }
+        }
+      },
+      "SignUpRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "pattern": "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[$%^*-_]).{12,}$"
+          }
+        },
+        "required": ["firstName", "lastName", "email", "password"]
+      },
+      "SignInRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "SignInResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -570,9 +824,7 @@
         "in": "header",
         "x-amazon-apigateway-authtype": "cognito_user_pools",
         "x-amazon-apigateway-authorizer": {
-          "providerARNs": [
-            "arn:aws:cognito-idp:eu-central-1:905418349556:userpool/eu-central-1_suYjZwGLV"
-          ],
+          "x-syndicate-cognito-userpool-names": ["${booking_userpool}"],
           "type": "cognito_user_pools"
         }
       }
