@@ -130,7 +130,7 @@ async function handleSignIn(event) {
 
         console.log(`Found clientId: ${clientId}`);
 
-        const authResult = await cognito.initiateAuth(params).promise();
+        const authResult = await cognito.adminInitiateAuth(params).promise();
         const idToken = authResult.AuthenticationResult.IdToken;
         return {
             statusCode: 200,
