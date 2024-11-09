@@ -14,7 +14,7 @@
       "resource_name": "Configuration"
     },{
       "resource_type": "dynamodb_table",
-      "resource_name": "${target_table}"
+      "resource_name": "Audit"
     }
   ],
   "event_sources": [
@@ -26,7 +26,7 @@
   ],
   "env_variables": {
     "region": "${region}",
-    "target_table": "${target_table}"
+    "target_table": "Audit"
   },
   "publish_version": true,
   "alias": "${lambdas_alias_name}",
