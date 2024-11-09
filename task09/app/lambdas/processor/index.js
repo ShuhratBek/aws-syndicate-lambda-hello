@@ -5,9 +5,11 @@ const { v4: uuidv4 } = require('uuid');
 const AWSXRay = require('aws-xray-sdk');
 const AWSWithXRay = AWSXRay.captureAWS(AWS);
 
-const dynamoDb = new AWSWithXRay.DynamoDB.DocumentClient();
+const region = process.env.region || "eu-central-1";// Defaulting to "eu-central-1" if region is not available in environment variables.
+const dynamoDb = new AWS.DynamoDB.DocumentClient({region});
 
 exports.handler = async (event) => {
+    const tableName = process.env.target_table;
     const latitude = 50.4375;
     const longitude = 30.5;
 
@@ -44,7 +46,7 @@ exports.handler = async (event) => {
 
         // Put the weather data into DynamoDB table
         await dynamoDb.put({
-            TableName: 'Weather',
+            TableName: tableName,
             Item: item
         }).promise();
 
