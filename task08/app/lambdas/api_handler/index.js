@@ -1,6 +1,7 @@
 const OpenMeteoClient = require('/opt/openMeteoClient'); // Path where Lambda layers are mounted
 
 exports.handler = async (event) => {
+    console.log(JSON.stringify(event));
     // Example coordinates for Kyiv
     const latitude = 50.4375;
     const longitude = 30.5;
@@ -14,6 +15,7 @@ exports.handler = async (event) => {
             body: JSON.stringify(forecast),
         };
     } catch (error) {
+        console.error('Error getWeatherForecast:', error);
         return {
             statusCode: 500,
             body: JSON.stringify({ error: error.message }),
