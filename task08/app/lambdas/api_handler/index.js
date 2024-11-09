@@ -1,4 +1,4 @@
-const OpenMeteoClient = require('/opt/openMeteoClient'); // Path where Lambda layers are mounted
+const OpenMeteoClient = require('/opt/node_modules/openMeteoClient'); // Path where Lambda layers are mounted
 
 exports.handler = async (event) => {
     console.log(JSON.stringify(event));
