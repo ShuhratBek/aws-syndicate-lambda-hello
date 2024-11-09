@@ -10,18 +10,15 @@ exports.handler = async () => {
         // Generate an array of 10 random UUIDs
         const ids = Array.from({ length: 10 }, () => uuidv4());
 
-        // Get the current timestamp with the desired precision, format accordingly
+        // Get the current timestamp as a string in ISO 8601 format
         const now = new Date();
-        const timestamp = now.toISOString().split('.')[0] + 'Z'; // Removes milliseconds if not needed
-
-        // Strip or include microseconds in the timestamp based on exact requirements
-        // const timestamp = now.toISOString(); // Uncomment to include full precision
+        const timestamp = now.toISOString(); // Use the default ISO format which is "YYYY-MM-DDTHH:mm:ss.sssZ"
 
         // Define the content to be stored in S3
         const content = JSON.stringify({ ids }, null, 2);
 
-        // Define the name of the file, potentially without .json if not required
-        const fileName = `${timestamp}`;  // Adjust as needed based on expectations
+        // Define the file name using the formatted timestamp
+        const fileName = timestamp; // Using the ISO format directly
 
         // Define the bucket name and parameters for S3
         const params = {
