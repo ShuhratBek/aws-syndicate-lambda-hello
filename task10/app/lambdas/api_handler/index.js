@@ -296,6 +296,7 @@ function parseTime(time) {
 // Create a new reservation
 async function createReservation(event) {
     const body = JSON.parse(event.body);
+    console.log(body);
     const { tableNumber, date, slotTimeStart, slotTimeEnd } = body;
 
     if (!tableNumber || !date || !slotTimeStart || !slotTimeEnd) {
