@@ -61,6 +61,7 @@ async function handleSignUp(event) {
             body: JSON.stringify({ message: "Sign-up successful" })
         };
     } catch (error) {
+        console.error(error);
         return { statusCode: 400, body: JSON.stringify({ error: error.message }) };
     }
 }
@@ -85,6 +86,7 @@ async function handleSignIn(event) {
             body: JSON.stringify({ accessToken: idToken })
         };
     } catch (error) {
+        console.error(error);
         return { statusCode: 400, body: JSON.stringify({ error: error.message }) };
     }
 }
@@ -110,6 +112,7 @@ async function createTable(event) {
             body: JSON.stringify({ id: body.id })
         };
     } catch (error) {
+        console.error(error);
         return { statusCode: 400, body: JSON.stringify({ error: error.message }) };
     }
 }
@@ -127,6 +130,7 @@ async function listTables() {
             body: JSON.stringify({ tables: data.Items })
         };
     } catch (error) {
+        console.error(error);
         return { statusCode: 400, body: JSON.stringify({ error: error.message }) };
     }
 }
@@ -147,6 +151,7 @@ async function getTable(event) {
             return { statusCode: 404, body: JSON.stringify({ error: "Table not found" }) };
         }
     } catch (error) {
+        console.error(error);
         return { statusCode: 400, body: JSON.stringify({ error: error.message }) };
     }
 }
@@ -176,6 +181,7 @@ async function createReservation(event) {
             body: JSON.stringify({ reservationId })
         };
     } catch (error) {
+        console.error(error);
         return { statusCode: 400, body: JSON.stringify({ error: error.message }) };
     }
 }
@@ -193,6 +199,7 @@ async function listReservations() {
             body: JSON.stringify({ reservations: data.Items })
         };
     } catch (error) {
+        console.error(error);
         return { statusCode: 400, body: JSON.stringify({ error: error.message }) };
     }
 }

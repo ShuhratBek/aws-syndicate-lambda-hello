@@ -13,7 +13,9 @@
   "env_variables": {
     "region": "${region}",
     "tables_table": "${tables_table}",
-    "reservations_table": "${reservations_table}"
+    "reservations_table": "${reservations_table}",
+    "USER_POOL_ID": "eu-central-1_svM3L09nd",
+    "APP_CLIENT_ID": "48j89flkjqba3ge9pbpete11no"
   },
   "publish_version": true,
   "alias": "${lambdas_alias_name}",
