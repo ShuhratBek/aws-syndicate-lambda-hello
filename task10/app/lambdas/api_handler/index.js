@@ -120,7 +120,7 @@ async function handleSignIn(event) {
         const userPoolId = await getUserPoolIdByName(process.env.booking_userpool);
         const clientId = await getAppClientIdByName(userPoolId, process.env.client_name);
         const params = {
-            AuthFlow: "USER_SRP_AUTH",
+            AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
             ClientId: clientId,
             AuthParameters: {
                 USERNAME: body.email,
