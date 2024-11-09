@@ -41,20 +41,43 @@ exports.handler = async (event) => {
     }
 };
 
-// Sign-up a new user
-async function handleSignUp(event) {
-    const body = JSON.parse(event.body);
+async function getUserPoolIdByName(userPoolName) {
     const params = {
-        UserPoolId: process.env.USER_POOL_ID,
-        Username: body.email,
-        UserAttributes: [
-            { Name: 'email', Value: body.email },
-            { Name: 'name', Value: `${body.firstName} ${body.lastName}` }
-        ],
-        TemporaryPassword: body.password,
+        MaxResults: 60 // maximum allowed is 60
     };
 
     try {
+        const listUserPools = await cognito.listUserPools(params).promise();
+        const userPool = listUserPools.UserPools.find(pool => pool.Name === userPoolName);
+
+        if (!userPool) {
+            throw new Error(`User Pool Name ${userPoolName} not found.`);
+        }
+
+        return userPool.Id;
+    } catch (error) {
+        console.error("Error retrieving User Pool ID:", error.message);
+        throw new Error('Failed to get User Pool ID.');
+    }
+}
+
+// Sign-up a new user
+async function handleSignUp(event) {
+    const body = JSON.parse(event.body);
+
+    try {
+        const userPoolId = await getUserPoolIdByName(process.env.booking_userpool);
+        const params = {
+            UserPoolId: userPoolId,
+            Username: body.email,
+            UserAttributes: [
+                { Name: 'email', Value: body.email },
+                { Name: 'name', Value: `${body.firstName} ${body.lastName}` }
+            ],
+            TemporaryPassword: body.password,
+        };
+        console.log(`Found userPoolId: ${userPoolId}`);
+
         await cognito.adminCreateUser(params).promise();
         return {
             statusCode: 200,
@@ -66,19 +89,47 @@ async function handleSignUp(event) {
     }
 }
 
+async function getAppClientIdByName(userPoolId, clientName) {
+    try {
+        // List all app clients for the specified user pool
+        const listAppClientsResponse = await cognito.listUserPoolClients({
+            UserPoolId: userPoolId,
+            MaxResults: 60 // You may adjust this as needed
+        }).promise();
+
+        // Find the client that matches the desired name
+        const appClient = listAppClientsResponse.UserPoolClients.find(client => client.ClientName === clientName);
+
+        if (!appClient) {
+            throw new Error(`Client Name ${clientName} not found in User Pool ${userPoolId}.`);
+        }
+
+        return appClient.ClientId;
+
+    } catch (error) {
+        console.error("Error retrieving App Client ID:", error.message);
+        throw new Error('Failed to get App Client ID.');
+    }
+}
+
 // Sign in a user
 async function handleSignIn(event) {
     const body = JSON.parse(event.body);
-    const params = {
-        AuthFlow: "USER_PASSWORD_AUTH",
-        ClientId: process.env.APP_CLIENT_ID,
-        AuthParameters: {
-            USERNAME: body.email,
-            PASSWORD: body.password
-        }
-    };
 
     try {
+        const userPoolId = await getUserPoolIdByName(process.env.booking_userpool);
+        const clientId = await getAppClientIdByName(userPoolId, process.env.client_name);
+        const params = {
+            AuthFlow: "USER_PASSWORD_AUTH",
+            ClientId: clientId,
+            AuthParameters: {
+                USERNAME: body.email,
+                PASSWORD: body.password
+            }
+        };
+
+        console.log(`Found clientId: ${clientId}`);
+
         const authResult = await cognito.initiateAuth(params).promise();
         const idToken = authResult.AuthenticationResult.IdToken;
         return {
