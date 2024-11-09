@@ -5,7 +5,7 @@ const region = process.env.region || "eu-central-1";// Defaulting to "eu-central
 const dynamoDb = new AWS.DynamoDB.DocumentClient({region});
 
 exports.handler = async (event) => {
-    const tableName = process.env.target_table
+    const tableName = process.env.target_table;
     console.log('event', JSON.stringify(event));
 
     try {
