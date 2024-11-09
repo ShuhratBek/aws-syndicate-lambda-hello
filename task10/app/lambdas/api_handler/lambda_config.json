@@ -15,7 +15,7 @@
     "tables_table": "${tables_table}",
     "reservations_table": "${reservations_table}",
     "booking_userpool": "${booking_userpool}",
-    "client_name": "${client_name}"
+    "client_name": "client-app"
   },
   "publish_version": true,
   "alias": "${lambdas_alias_name}",
