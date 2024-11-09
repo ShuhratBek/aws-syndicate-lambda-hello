@@ -121,6 +121,7 @@ async function handleSignIn(event) {
         const clientId = await getAppClientIdByName(userPoolId, process.env.client_name);
         const params = {
             AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
+            UserPoolId: userPoolId,
             ClientId: clientId,
             AuthParameters: {
                 USERNAME: body.email,
