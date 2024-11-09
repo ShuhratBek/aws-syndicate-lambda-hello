@@ -285,6 +285,40 @@ async function checkTableByNumber(tableNumber) {
     }
 }
 
+// Function to check for overlapping reservations
+async function checkForOverlappingReservations(tableNumber, date, slotTimeStart, slotTimeEnd) {
+    const params = {
+        TableName: 'Reservations',
+        FilterExpression: '#tableNum = :tableNumber AND #d = :date',
+        ExpressionAttributeNames: {
+            '#tableNum': 'tableNumber',
+            '#d': 'date'
+        },
+        ExpressionAttributeValues: {
+            ':tableNumber': tableNumber,
+            ':date': date
+        }
+    };
+
+    try {
+        const data = await dynamoDb.scan(params).promise();
+
+        for (const reservation of data.Items) {
+            if (isTimeOverlap(slotTimeStart, slotTimeEnd, reservation.slotTimeStart, reservation.slotTimeEnd)) {
+                return {
+                    statusCode: 400,
+                    body: JSON.stringify({ error: 'Overlapping reservation exists' })
+                };
+            }
+        }
+
+        return null; // No overlapping reservations
+    } catch (error) {
+        console.error('Error scanning for overlapping reservations:', error);
+        throw new Error('Error checking for overlapping reservations.');
+    }
+}
+
 // Utility function to determine if time intervals overlap
 function isTimeOverlap(start1, end1, start2, end2) {
     const [s1, e1] = [parseTime(start1), parseTime(end1)];
@@ -321,32 +355,13 @@ async function createReservation(event) {
         };
     }
 
-    // Query for existing reservations on the same table and date
-    const params = {
-        TableName: reservationsTable,
-        KeyConditionExpression: 'tableNumber = :tableNumber AND #d = :date',
-        ExpressionAttributeNames: {
-            '#d': 'date'
-        },
-        ExpressionAttributeValues: {
-            ':tableNumber': tableNumber,
-            ':date': date
-        },
-        ProjectionExpression: 'slotTimeStart, slotTimeEnd'
-    };
+    // Check for overlapping reservations
+    const overlapErrorResponse = await checkForOverlappingReservations(tableNumber, date, slotTimeStart, slotTimeEnd);
+    if (overlapErrorResponse) {
+        return overlapErrorResponse;
+    }
 
     try {
-        const data = await dynamoDb.query(params).promise();
-
-        for (const reservation of data.Items) {
-            if (isTimeOverlap(slotTimeStart, slotTimeEnd, reservation.slotTimeStart, reservation.slotTimeEnd)) {
-                return {
-                    statusCode: 400,
-                    body: JSON.stringify({ error: 'Overlapping reservation exists' })
-                };
-            }
-        }
-
         const reservationId = uuidv4();
         await dynamoDb.put({
             TableName: reservationsTable,
