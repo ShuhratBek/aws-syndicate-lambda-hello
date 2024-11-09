@@ -61,24 +61,80 @@ async function getUserPoolIdByName(userPoolName) {
     }
 }
 
+async function setPasswordForUser(username, userPoolId, clientId, challengeName, session, newPassword) {
+    const challengeParams = {
+        ChallengeName: challengeName,
+        ClientId: clientId,
+        UserPoolId: userPoolId,
+        ChallengeResponses: {
+            USERNAME: username,
+            NEW_PASSWORD: newPassword
+        },
+        Session: session
+    };
+
+    try {
+        await cognito.adminRespondToAuthChallenge(challengeParams).promise();
+        console.log('Password set successfully');
+    } catch (error) {
+        console.error('Error setting password:', error.message);
+        throw new Error('Failed to set password');
+    }
+}
+
+async function authenticateTemporaryUser(username, temporaryPassword, userPoolId, clientId) {
+    const authParams = {
+        AuthFlow: 'ADMIN_USER_PASSWORD_AUTH',
+        UserPoolId: userPoolId,
+        ClientId: clientId,
+        AuthParameters: {
+            USERNAME: username,
+            PASSWORD: temporaryPassword
+        }
+    };
+
+    try {
+        const response = await cognito.adminInitiateAuth(authParams).promise();
+        return response;
+    } catch (error) {
+        if (error.code === 'PasswordResetRequiredException') {
+            console.log('Password reset required');
+            return error.response;
+        }
+        console.error('Error during temporary authentication:', error.message);
+        throw new Error('Authentication failed');
+    }
+}
+
 // Sign-up a new user
 async function handleSignUp(event) {
     const body = JSON.parse(event.body);
+    const username = body.email;
+    const temporaryPassword = 'TemporaryPassword123!';
+    const newPassword = body.password;
 
     try {
         const userPoolId = await getUserPoolIdByName(process.env.booking_userpool);
+        const clientId = await getAppClientIdByName(userPoolId, process.env.client_name);
         const params = {
             UserPoolId: userPoolId,
             Username: body.email,
             UserAttributes: [
                 { Name: 'email', Value: body.email },
-                { Name: 'name', Value: `${body.firstName} ${body.lastName}` }
+                { Name: 'name', Value: `${body.firstName} ${body.lastName}` },
+                { Name: 'email_verified', Value: 'true' }
             ],
-            TemporaryPassword: body.password,
+            TemporaryPassword: temporaryPassword,
+            MessageAction: 'SUPPRESS', // Optional: Suppress invitation email
         };
         console.log(`Found userPoolId: ${userPoolId}`);
 
         await cognito.adminCreateUser(params).promise();
+        const authResponse = await authenticateTemporaryUser(username, temporaryPassword, userPoolId, clientId);
+
+        if (authResponse.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
+            await setPasswordForUser(username, userPoolId, clientId, authResponse.ChallengeName, authResponse.Session, newPassword);
+        }
         return {
             statusCode: 200,
             body: JSON.stringify({ message: "Sign-up successful" })
