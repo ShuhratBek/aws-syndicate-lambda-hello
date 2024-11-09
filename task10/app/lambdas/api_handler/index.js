@@ -263,34 +263,102 @@ async function getTable(event) {
         return { statusCode: 400, body: JSON.stringify({ error: error.message }) };
     }
 }
+// Check if a table exists in the 'Tables' table
+async function checkTableExists(tableNumber) {
+    const params = {
+        TableName: tablesTable,
+        Key: { id: tableNumber }
+    };
+
+    try {
+        const data = await dynamoDb.get(params).promise();
+        return !!data.Item;
+    } catch (error) {
+        console.error('Error checking table existence:', error);
+        throw new Error('Error checking table existence');
+    }
+}
+
+// Utility function to determine if time intervals overlap
+function isTimeOverlap(start1, end1, start2, end2) {
+    const [s1, e1] = [parseTime(start1), parseTime(end1)];
+    const [s2, e2] = [parseTime(start2), parseTime(end2)];
+
+    return (s1 < e2 && s2 < e1);
+}
+
+// Utility function to parse "HH:MM" time to a number for comparisons
+function parseTime(time) {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+}
 
 // Create a new reservation
 async function createReservation(event) {
     const body = JSON.parse(event.body);
-    const reservationId = uuidv4();
+    const { tableNumber, date, slotTimeStart, slotTimeEnd } = body;
 
+    if (!tableNumber || !date || !slotTimeStart || !slotTimeEnd) {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'Missing required reservation data' })
+        };
+    }
+
+    // Check if the table exists
+    const tableExists = await checkTableExists(tableNumber);
+    if (!tableExists) {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'Table does not exist' })
+        };
+    }
+
+    // Query for existing reservations on the same table and date
     const params = {
         TableName: reservationsTable,
-        Item: {
-            id: reservationId,
-            tableNumber: body.tableNumber,
-            clientName: body.clientName,
-            phoneNumber: body.phoneNumber,
-            date: body.date,
-            slotTimeStart: body.slotTimeStart,
-            slotTimeEnd: body.slotTimeEnd
-        }
+        KeyConditionExpression: 'tableNumber = :tableNumber AND #d = :date',
+        ExpressionAttributeNames: {
+            '#d': 'date'
+        },
+        ExpressionAttributeValues: {
+            ':tableNumber': tableNumber,
+            ':date': date
+        },
+        ProjectionExpression: 'slotTimeStart, slotTimeEnd'
     };
 
     try {
-        await dynamoDb.put(params).promise();
+        const data = await dynamoDb.query(params).promise();
+
+        for (const reservation of data.Items) {
+            if (isTimeOverlap(slotTimeStart, slotTimeEnd, reservation.slotTimeStart, reservation.slotTimeEnd)) {
+                return {
+                    statusCode: 400,
+                    body: JSON.stringify({ error: 'Overlapping reservation exists' })
+                };
+            }
+        }
+
+        const reservationId = uuidv4();
+        await dynamoDb.put({
+            TableName: reservationsTable,
+            Item: {
+                id: reservationId,
+                ...body
+            }
+        }).promise();
+
         return {
             statusCode: 200,
             body: JSON.stringify({ reservationId })
         };
     } catch (error) {
         console.error(error);
-        return { statusCode: 400, body: JSON.stringify({ error: error.message }) };
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: 'Could not process reservation' })
+        };
     }
 }
 
